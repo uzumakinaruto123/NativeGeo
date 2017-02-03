@@ -1,5 +1,5 @@
 {
-  "name": "NativeGeo",
+  "name": "cordova-plugin-native-geolocation",
   "version": "0.0.1",
   "description": "Plugin helps getting users current location using native gps.",
   "cordova": {
@@ -8,10 +8,13 @@
       "android"
     ]
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/uzumakinaruto123/NativeGeo.git"
+  },
   "keywords": [
     "ecosystem:cordova",
     "cordova-android"
   ],
-  "author": "uzumakinaruto123",
-  "license": "ISC"
+  "author": "uzumakinaruto123"
 }
