@@ -1,15 +1,21 @@
 <?xml version='1.0' encoding='utf-8'?>
-<plugin id="cordova-plugin-native-geolocation" version="0.0.1" 
+<plugin id="com.cordova.nativegeolocation" version="1.0.1" 
     xmlns="http://apache.org/cordova/ns/plugins/1.0" 
     xmlns:android="http://schemas.android.com/apk/res/android">
+    <keywords>Native , Android , Geolocation</keywords>
+    <!--<repo>https://github.com/uzumakinaruto123/NativeGeo.git</repo>-->
+    <engines>
+        <engine name="cordova" version=">=3.0.0"/>
+    </engines>
     <name>NativeGeo</name>
     <js-module name="NativeGeo" src="www/NativeGeo.js">
-        <clobbers target="cordova.plugins.NativeGeo" />
+        <clobbers target="NativeGeo" />
     </js-module>
     <platform name="android">
+        <framework src="com.android.support:support-v4:+" />
         <config-file parent="/*" target="res/xml/config.xml">
             <feature name="NativeGeo">
-                <param name="android-package" value="com.cordova.nativegeolocation" />
+                <param name="android-package" value="com.cordova.nativegeolocation.NativeGeo" />
             </feature>
         </config-file>
         <config-file parent="/*" target="AndroidManifest.xml">
@@ -19,6 +25,7 @@
             <uses-permission android:name="android.hardware.location" />
             <uses-permission android:name="android.permission.INTERNET" />
         </config-file>
-        <source-file src="src/android/NativeGeo.java" target-dir="src/cordova-plugin-native-geolocation/NativeGeo" />
+        <source-file src="src/android/NativeGeo.java" target-dir="src/com/cordova/nativegeolocation" />
+        <source-file src="src/android/GPSTracker.java" target-dir="src/com/cordova/nativegeolocation" />
     </platform>
 </plugin>

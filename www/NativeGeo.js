@@ -1,5 +1,10 @@
 var exec = require('cordova/exec');
+var PLUGIN_NAME = 'NativeGeo';
 
-exports.coolMethod = function(arg0, success, error) {
-    exec(success, error, "NativeGeo", "coolMethod", [arg0]);
+var NativeGeo = {
+    getCurrentLocation: function(success, error) {
+        exec(success, error, "NativeGeo", "getCurrentLocation", []);
+    }
 };
+
+module.exports = NativeGeo;
