@@ -46,12 +46,22 @@ public class NativeGeo extends CordovaPlugin {
 
         gps = new GPSTracker(context);
 
-            // check if GPS enabled
-            gps.getLocation();
-            if(gps.canGetLocation()){
+        String provider = gps.getBestProviderForCall();
+        Location lastLocation = gps.getBestLocation(provider);
+        if (lastLocation == null) {
 
-               String latitude = String.valueOf(gps.getLatitude());
-               String longitude = String.valueOf(gps.getLongitude());
+            // new no location
+            callbackContext.error("Can't get location'");
+            
+        } else {
+
+            // new location success
+            // check if GPS enabled
+            // gps.getLocation();
+            // if(gps.canGetLocation()){
+
+               String latitude = String.valueOf(lastLocation.getLatitude());
+               String longitude = String.valueOf(lastLocation.getLongitude());
 
                JSONObject obj = new JSONObject();
                 try {
@@ -60,21 +70,18 @@ public class NativeGeo extends CordovaPlugin {
                 } catch (JSONException e) {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
+                    callbackContext.error("Can't get location'");
                 }
 
                callbackContext.success(obj);
-               if(gps.getLatitude() != 0.0 && gps.getLongitude() != 0.0){
-                    gps.stopUsingGPS();
-               }
-               // \n is for new line
-            //    Toast.makeText(context, "Your Location is - \nLat: "
-            //       + latitude + "\nLong: " + longitude, Toast.LENGTH_LONG).show();
-            }else{
-               // can't get location
-               // GPS or Network is not enabled
-               // Ask user to enable GPS/network in settings
-            //    this.showSettingsAlert();
-               callbackContext.error("Can't get location'");
-            }
+            //    if(lastLocation.getLatitude() != 0.0 && lastLocation.getLongitude() != 0.0){
+            //         gps.stopUsingGPS();
+            //    }
+            // }else{
+            //    callbackContext.error("Can't get location'");
+            // }
+        }
+
+            
     }
 }

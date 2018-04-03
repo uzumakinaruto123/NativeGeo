@@ -12,6 +12,8 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.provider.Settings;
 import android.util.Log;
+import android.location.Criteria;
+import java.util.List;
 
 public class GPSTracker extends Service implements LocationListener {
 
@@ -41,12 +43,13 @@ public class GPSTracker extends Service implements LocationListener {
 
    public GPSTracker(Context context) {
       this.mContext = context;
+      locationManager = (LocationManager) mContext.getSystemService(LOCATION_SERVICE);
       getLocation();
    }
 
    public Location getLocation() {
       try {
-         locationManager = (LocationManager) mContext.getSystemService(LOCATION_SERVICE);
+        //  locationManager = (LocationManager) mContext.getSystemService(LOCATION_SERVICE);
 
          // getting GPS status
          isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
@@ -106,6 +109,38 @@ public class GPSTracker extends Service implements LocationListener {
 
       return location;
    }
+
+    public String getBestProviderForCall() {
+        Criteria locationCriteria = new Criteria();
+        locationCriteria.setAccuracy(Criteria.ACCURACY_FINE);
+        locationCriteria.setSpeedRequired(false);
+        locationCriteria.setAltitudeRequired(false);
+        locationCriteria.setBearingRequired(false);
+        locationCriteria.setCostAllowed(false);
+        return locationManager.getBestProvider(locationCriteria, true);
+    }
+
+    public Location getBestLocation(String bestProvider) {
+        List<String> providers = locationManager.getProviders(true);
+
+        Location l = locationManager.getLastKnownLocation(bestProvider);
+        Location bestLocation = l;
+
+        if (bestLocation != null) {
+        return bestLocation;
+        }
+
+        for (String provider : providers) {
+        l = locationManager.getLastKnownLocation(provider);
+        if (l == null) {
+            continue;
+        }
+        if (bestLocation == null || l.getAccuracy() < bestLocation.getAccuracy()) {
+            bestLocation = l;
+        }
+        }
+        return bestLocation;
+    }
 
    /**
       * Stop using GPS listener
