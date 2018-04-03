@@ -19,6 +19,11 @@ import android.provider.Settings;
 
 import android.widget.Toast;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+
 /**
  * This class echoes a string called from JavaScript.
  */
@@ -28,7 +33,14 @@ public class NativeGeo extends CordovaPlugin {
 
 
     // GPSTracker class
-   GPSTracker gps;
+    // GPSTracker gps;
+
+    private FusedLocationProviderClient mFusedLocationClient;
+
+    /**
+     * Represents a geographical location.
+     */
+    protected Location mLastLocation;
 
     @Override
     public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
@@ -44,43 +56,59 @@ public class NativeGeo extends CordovaPlugin {
         
         Context context = cordova.getActivity().getApplicationContext();
 
-        gps = new GPSTracker(context);
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(context);
 
-        String provider = gps.getBestProviderForCall();
-        Location lastLocation = gps.getBestLocation(provider);
-        if (lastLocation == null) {
+        mFusedLocationClient.getLastLocation()
+                .addOnCompleteListener(context, new OnCompleteListener<Location>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Location> task) {
+                        if (task.isSuccessful() && task.getResult() != null) {
+                            mLastLocation = task.getResult();
+                            // mLastLocation.getLatitude() mLastLocation.getLongitude()
+                            String latitude = String.valueOf(mLastLocation.getLatitude());
+                            String longitude = String.valueOf(mLastLocation.getLongitude());
 
-            // new no location
-            callbackContext.error("Can't get location'");
-            
-        } else {
+                            JSONObject obj = new JSONObject();
+                                try {
+                                    obj.put("latitude", latitude);
+                                    obj.put("longitude", longitude);
+                                } catch (JSONException e) {
+                                    // TODO Auto-generated catch block
+                                    e.printStackTrace();
+                                    callbackContext.error("Can't get location'");
+                                }
 
-            // new location success
-            // check if GPS enabled
-            // gps.getLocation();
-            // if(gps.canGetLocation()){
+                            callbackContext.success(obj);
+                            
+                        } else {
+                            Log.w(TAG, "getLastLocation:exception", task.getException());
+                            callbackContext.error("Can't get location'");
+                            // showSnackbar(getString(R.string.no_location_detected));
+                        }
+                    }
+                });
 
-               String latitude = String.valueOf(lastLocation.getLatitude());
-               String longitude = String.valueOf(lastLocation.getLongitude());
+        // gps = new GPSTracker(context);
 
-               JSONObject obj = new JSONObject();
-                try {
-                    obj.put("latitude", latitude);
-                    obj.put("longitude", longitude);
-                } catch (JSONException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                    callbackContext.error("Can't get location'");
-                }
+        // String provider = gps.getBestProviderForCall();
+        // Location lastLocation = gps.getBestLocation(provider);
+        // if (lastLocation == null) {
+        //     callbackContext.error("Can't get location'");
+        // } else {
+        //        String latitude = String.valueOf(lastLocation.getLatitude());
+        //        String longitude = String.valueOf(lastLocation.getLongitude());
 
-               callbackContext.success(obj);
-            //    if(lastLocation.getLatitude() != 0.0 && lastLocation.getLongitude() != 0.0){
-            //         gps.stopUsingGPS();
-            //    }
-            // }else{
-            //    callbackContext.error("Can't get location'");
-            // }
-        }
+        //        JSONObject obj = new JSONObject();
+        //         try {
+        //             obj.put("latitude", latitude);
+        //             obj.put("longitude", longitude);
+        //         } catch (JSONException e) {
+        //             // TODO Auto-generated catch block
+        //             e.printStackTrace();
+        //             callbackContext.error("Can't get location'");
+        //         }
+        //        callbackContext.success(obj);
+        // }
 
             
     }

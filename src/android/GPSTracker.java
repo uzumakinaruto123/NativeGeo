@@ -15,6 +15,11 @@ import android.util.Log;
 import android.location.Criteria;
 import java.util.List;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+
 public class GPSTracker extends Service implements LocationListener {
 
    private final Context mContext;
